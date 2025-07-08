@@ -5,7 +5,6 @@ WORKDIR /app
 COPY ml_service/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY alembic.ini .
 COPY ml_service .
 
 

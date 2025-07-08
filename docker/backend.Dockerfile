@@ -6,7 +6,7 @@ COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN pip install alembic
-
+RUN pip install pydantic[email]
 COPY backend .
 
-CMD alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000
+CMD ["sh", "-c", "alembic upgrade head && uvicorn main:app --host 0.0.0.0 --port 8000"]

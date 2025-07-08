@@ -14,8 +14,7 @@ class PostRead(PostBase):
     created_at: datetime
     user_id: int
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class UserBase(BaseModel):
     username: str
@@ -28,5 +27,4 @@ class UserRead(UserBase):
     id: int
     posts: List[PostRead] = []
 
-    class Config:
-        orm_mode = True 
+    model_config = {"from_attributes": True}
