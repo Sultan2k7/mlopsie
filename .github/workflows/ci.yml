@@ -7,43 +7,63 @@ on:
     branches: [ master, main ]
 
 jobs:
-  build-test:
+  build-and-test:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: socialmedia
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
 
-      - name: Set up Docker Compose
-        uses: docker/setup-compose-action@v2
+      - name: Build Docker images
+        run: docker-compose build
 
-      - name: Build and start containers
+      - name: Install backend dependencies
         run: |
-          docker compose build
-          docker compose up -d
-
-      - name: Wait for Postgres to be healthy
+          cd backend
+          pip install -r requirements.txt
+      - name: Run backend tests
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/socialmedia
         run: |
-          until docker compose exec -T db pg_isready -U user; do sleep 2; done
-
-      - name: Run backend tests inside container
+          cd backend
+          pytest
+      - name: Lint backend
         run: |
-          docker compose exec -T backend pytest
+          cd backend
+          pip install flake8
+          flake8 .
 
-      - name: Run ML service tests inside container
+      # ML Service: Install dependencies
+      - name: Install ML service dependencies
         run: |
-          docker compose exec -T ml_service pytest || true
-
-      - name: Lint backend (inside container)
+          cd ml_service
+          pip install -r requirements.txt
+      # ML Service: Run tests (if you have any, e.g., test_extractor.py)
+      - name: Run ML service tests
         run: |
-          docker compose exec -T backend flake8 .
-
-      - name: Lint ML service (inside container)
+          cd ml_service
+          if [ -d tests ]; then pytest; fi
+      # ML Service: Lint
+      - name: Lint ML service
         run: |
-          docker compose exec -T ml_service flake8 . || true
-
-      - name: Stop and clean up containers
-        if: always()
-        run: docker compose down -v
+          cd ml_service
+          pip install flake8
+          flake8 .
