@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+</head>
+<body>
+<nav>
+  <a href="/">Home</a> | <a href="/login">Login</a>
+</nav>
+<h1>Register</h1>
+<form id="registerForm">
+  <input name="username" placeholder="Username" required><br>
+  <input name="email" type="email" placeholder="Email" required><br>
+  <input name="password" type="password" placeholder="Password" required><br>
+  <button type="submit">Register</button>
+</form>
+<div id="registerMsg"></div>
+<script>
+document.getElementById('registerForm').onsubmit = async function(e) {
+  e.preventDefault();
+  const form = e.target;
+  const res = await fetch('/users/', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      username: form.username.value,
+      email: form.email.value,
+      password: form.password.value
+    })
+  });
+  const msg = document.getElementById('registerMsg');
+  if (res.ok) {
+    msg.textContent = 'Registration successful! You can now log in.';
+    form.reset();
+  } else {
+    const data = await res.json();
+    msg.textContent = 'Error: ' + (data.detail || 'Registration failed');
+  }
+};
+</script>
+</body>
+</html>

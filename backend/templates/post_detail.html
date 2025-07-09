@@ -1,9 +1,14 @@
-<h1>Пост #{{ post.id }}</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{ post.title }}</title>
+</head>
+<body>
+<nav>
+  <a href="/">Home</a>
+</nav>
+<h1>{{ post.title }}</h1>
 <p>{{ post.content }}</p>
-
-<h3>Теги (из ML):</h3>
-<ul>
-    {% for tag in post.tags %}
-        <li>{{ tag }}</li>
-    {% endfor %}
-</ul>
+<a href="/">Back to Posts</a>
+</body>
+</html>
