@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Response
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
-from routers import users_router, posts_router
+from routers import users_router, posts_router, comments_likes_router
 
 app = FastAPI(
     title="Social Media API",
@@ -14,6 +14,10 @@ app = FastAPI(
         {
             "name": "Posts",
             "description": "Operations with posts: create, read, update, delete, filter, and paginate posts."
+        },
+        {
+            "name": "Likes & Comments",
+            "description": "Like/unlike posts and add/edit/delete comments."
         }
     ]
 )
@@ -29,4 +33,5 @@ def metrics():
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 app.include_router(users_router)
-app.include_router(posts_router) 
+app.include_router(posts_router)
+app.include_router(comments_likes_router) 
