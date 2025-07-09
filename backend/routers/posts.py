@@ -4,6 +4,7 @@ from typing import List, Optional
 from database import get_db # type: ignore
 from models import Post, User
 from schemas import PostCreate, PostRead
+import httpx
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
@@ -14,6 +15,12 @@ def create_post(post: PostCreate, user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     new_post = Post(title=post.title, content=post.content, user_id=user_id)
     db.add(new_post)
+    db.commit()
+    db.refresh(new_post)
+    ml_url = "http://ml_service:5000/analyze"
+    response = httpx.post(ml_url, json={"content": new_post.title + ' ' + new_post.content})
+    sentiment = response.json().get("sentiment")
+    new_post.tone = sentiment
     db.commit()
     db.refresh(new_post)
     return new_post

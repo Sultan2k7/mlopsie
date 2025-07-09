@@ -79,3 +79,11 @@ def test_pagination():
     assert response.status_code == 200
     data = response.json()
     assert len(data) >= 5 
+
+def test_post_tone_sentiment():
+    user_id = create_user_and_get_id("toneuser", "toneuser@example.com", "pass")
+    response = client.post(f"/posts/?user_id={user_id}", json=post_payload("I love this!", "This is great!"))
+    assert response.status_code == 201
+    data = response.json()
+    assert "tone" in data
+    assert data["tone"] in ["POSITIVE", "NEGATIVE"] 

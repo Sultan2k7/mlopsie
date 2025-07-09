@@ -13,6 +13,7 @@ class PostRead(PostBase):
     id: int
     created_at: datetime
     user_id: int
+    tone: Optional[str] = None
     model_config = {"from_attributes": True}
 
 class UserBase(BaseModel):
