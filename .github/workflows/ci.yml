@@ -52,9 +52,14 @@ jobs:
           cd backend
           pip install -r requirements.txt
 
+      - name: Run Alembic migrations
+        run: |
+          cd backend
+          alembic upgrade head
+
       - name: Run backend tests
         env:
-          DATABASE_URL: postgresql://user:password@db:5432/socialmedia
+          DATABASE_URL: postgresql://user:password@localhost:5432/socialmedia
         run: |
           cd backend
           pytest
