@@ -26,24 +26,24 @@ jobs:
 
       - name: Wait for Postgres to be healthy
         run: |
-          until docker-compose exec -T db pg_isready -U user; do sleep 2; done
+          until docker compose exec -T db pg_isready -U user; do sleep 2; done
 
       - name: Run backend tests inside container
         run: |
-          docker-compose exec -T backend pytest
+          docker compose exec -T backend pytest
 
       - name: Run ML service tests inside container
         run: |
-          docker-compose exec -T ml_service pytest || true
+          docker compose exec -T ml_service pytest || true
 
       - name: Lint backend (inside container)
         run: |
-          docker-compose exec -T backend flake8 .
+          docker compose exec -T backend flake8 .
 
       - name: Lint ML service (inside container)
         run: |
-          docker-compose exec -T ml_service flake8 . || true
+          docker compose exec -T ml_service flake8 . || true
 
       - name: Stop and clean up containers
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
