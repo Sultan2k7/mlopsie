@@ -8,3 +8,5 @@ alembic
 pydantic[email]
 pytest
 httpx
+jinja2
+python-multipart

@@ -1,0 +1,9 @@
+<h1>Пост #{{ post.id }}</h1>
+<p>{{ post.content }}</p>
+
+<h3>Теги (из ML):</h3>
+<ul>
+    {% for tag in post.tags %}
+        <li>{{ tag }}</li>
+    {% endfor %}
+</ul>

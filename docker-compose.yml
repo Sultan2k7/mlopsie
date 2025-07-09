@@ -22,7 +22,7 @@ services:
       - db
       - ml_service
     environment:
-      DATABASE_URL: postgresql://user:password@localhost:5432/socialmedia
+      DATABASE_URL: postgresql://user:password@db:5432/socialmedia
       ML_SERVICE_URL: http://ml_service:5000
     volumes:
       - ./backend:/app
