@@ -54,7 +54,7 @@ jobs:
 
       - name: Run backend tests
         env:
-          DATABASE_URL: postgresql://user:password@localhost:5432/socialmedia
+          DATABASE_URL: postgresql://user:password@db:5432/socialmedia
         run: |
           cd backend
           pytest
