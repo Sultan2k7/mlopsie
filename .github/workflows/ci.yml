@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [ master, main ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: socialmedia
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run backend tests
+        env:
+          DATABASE_URL: postgresql://user:password@localhost:5432/socialmedia
+        run: |
+          cd backend
+          pytest
+
+      - name: Lint backend
+        run: |
+          cd backend
+          pip install flake8
+          flake8 .
+
+      - name: Build Docker images
+        run: docker-compose build
+
+      # ML Service: Install dependencies
+      - name: Install ML service dependencies
+        run: |
+          cd ml_service
+          pip install -r requirements.txt
+
+      # ML Service: Run tests (if you have any, e.g., test_extractor.py)
+      - name: Run ML service tests
+        run: |
+          cd ml_service
+          if [ -d tests ]; then pytest; fi
+
+      # ML Service: Lint
+      - name: Lint ML service
+        run: |
+          cd ml_service
+          pip install flake8
+          flake8 .
